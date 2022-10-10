@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "faster_python"
+version = "0.1.0"
+description = ""
+authors = ["hwang h <hehehwang@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.23.3"
+rich = "^12.6.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
