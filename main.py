@@ -19,7 +19,6 @@ def worker(job: List[Tuple[int, int]]):
             rtn.append((x, y))
     return rtn
 
-
 def main():
     global criteria
 
@@ -35,7 +34,7 @@ def main():
             [(randint(1, 10), randint(1, 10)) for _ in range(5_000)]
             for _ in range(1_000)
         ]
-        works_np = np.array(works)
+        works_np = np.array(works, dtype='int64')
         with open(works_filename + ".pkl", "wb") as f:
             pkl.dump(works, f)
         with open(works_filename + "_np.pkl", "wb") as f:
@@ -85,4 +84,14 @@ result: 751089, numpy duration : 0.04539262500475161
 result: 751089, multiprocessing duration : 1.0570068339948193
 
 result: 751089, clib duration : 1.7647754159988835
+===========================================================
+on windows (Ryzen 5 5600X)
+initialize:  0.4726191999980074
+result: 749200, naive duration : 0.5674392000000807
+
+result: 749200, numpy duration : 0.036203600000590086
+
+result: 749200, multiprocessing duration : 1.012214899998071
+
+result: 749200, clib duration : 0.07173800000236952
 """
