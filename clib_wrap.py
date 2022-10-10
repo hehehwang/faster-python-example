@@ -1,7 +1,9 @@
 import ctypes
+import os
+
 import numpy as np
 
-lib = ctypes.CDLL("./clib.dll")
+lib = ctypes.CDLL("./clib.so" if os.name == "posix" else "./clib.dll")
 f = lib.worker
 f.restype = ctypes.POINTER(ctypes.c_longlong)
 
@@ -13,11 +15,14 @@ def worker_clib(nparr: np.ndarray):
     ret = np.ctypeslib.as_array(ret_raw, shape=[length, 2])
     return ret[ret[:, 0] != -1]
 
+
 def test():
-    print(worker_clib(np.array([[1,2],[3,4],[5,6]], dtype='int64')))
+    print(worker_clib(np.array([[1, 2], [3, 4], [5, 6]], dtype="int64")))
+
 
 def main():
     test()
+
 
 if __name__ == "__main__":
     main()
