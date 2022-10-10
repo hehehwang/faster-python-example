@@ -6,6 +6,7 @@ from time import perf_counter
 from typing import List, Tuple
 
 import numpy as np
+from numba import jit
 
 from clib_wrap import worker_clib
 
@@ -13,10 +14,13 @@ criteria = 5
 
 
 def worker(job: List[Tuple[int, int]]):
-    rtn = []
-    for x, y in job:
-        if x * x + y * y <= criteria * criteria:
-            rtn.append((x, y))
+    rtn = [(x, y) for x, y in job if x * x + y * y <= criteria * criteria]
+    return rtn
+
+
+@jit(nopython=True)
+def worker_numba(job):
+    rtn = [(x, y) for x, y in job if x * x + y * y <= criteria * criteria]
     return rtn
 
 
@@ -51,6 +55,13 @@ def main():
     print(f"result: {len(result_naive)}, naive duration : {perf_counter() - marker}\n")
 
     marker = perf_counter()
+    # worker_numba = jit(lambda w: worker(w))
+    result_numba = []
+    for w in works_np:
+        result_numba.extend(worker_numba(w))
+    print(f"result: {len(result_numba)}, numba duration : {perf_counter() - marker}\n")
+
+    marker = perf_counter()
     result_np = works_np[
         works_np[:, :, 0] * works_np[:, :, 0] + works_np[:, :, 1] * works_np[:, :, 1]
         <= criteria * criteria
@@ -77,14 +88,16 @@ if __name__ == "__main__":
 
 """
 on macOS (M1):
-initialize:  0.4239407500062953
-result: 751089, naive duration : 0.41367750000063097
+initialize:  0.28590524999890476
+result: 751089, naive duration : 0.3948318749971804
 
-result: 751089, numpy duration : 0.0711455839991686
+result: 751089, numba duration : 0.22138149999955203
 
-result: 751089, multiprocessing duration : 1.1578752500063274
+result: 751089, numpy duration : 0.052155458004563116
 
-result: 751089, clib duration : 0.060912166998605244
+result: 751089, multiprocessing duration : 1.1577142919995822
+
+result: 751089, clib duration : 0.06615670800238149
 ===========================================================
 on windows (Ryzen 5 5600X)
 initialize:  0.4726191999980074
